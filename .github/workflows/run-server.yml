@@ -1,0 +1,36 @@
+# mgatestyuthuenho
+YouTube nhoo
+name: Run Minecraft Bedrock Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Download ngrok
+      run: |
+        wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+        unzip ngrok-stable-linux-amd64.zip
+        chmod +x ngrok
+
+    - name: Setup ngrok token
+      run: ./ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+
+    - name: Start ngrok tunnel
+      run: ./ngrok tcp 19132 --region=ap &
+    
+    - name: Download Minecraft Bedrock Server
+      run: |
+        wget https://minecraft.azureedge.net/bin-linux/bedrock-server-1.21.80.01.zip
+        unzip bedrock-server-1.21.80.01.zip -d bedrock-server
+
+    - name: Run Bedrock Server
+      run: |
+        cd bedrock-server
+        LD_LIBRARY_PATH=. ./bedrock_server
+        
